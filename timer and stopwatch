@@ -1,0 +1,80 @@
+import time
+import threading
+
+class TimerStopwatch:
+    def __init__(self):
+        self.timer_running = False
+        self.stopwatch_running = False
+        self.start_time = 0
+
+    def start_timer(self, duration):
+        self.timer_running = True
+        self.start_time = time.time()
+
+        while self.timer_running:
+            elapsed_time = time.time() - self.start_time
+            remaining_time = max(0, duration - elapsed_time)
+
+            print(f"Timer: {int(remaining_time)} seconds remaining", end='\r')
+
+            if elapsed_time >= duration:
+                print("\nTimer is complete!")
+                self.timer_running = False
+
+            time.sleep(1)
+
+    def stop_timer(self):
+        self.timer_running = False
+
+    def start_stopwatch(self):
+        self.stopwatch_running = True
+        self.start_time = time.time()
+
+        while self.stopwatch_running:
+            elapsed_time = time.time() - self.start_time
+
+            print(f"Stopwatch: {int(elapsed_time)} seconds elapsed", end='\r')
+
+            time.sleep(1)
+
+    def stop_stopwatch(self):
+        self.stopwatch_running = False
+
+# Example Usage
+if __name__ == "__main__":
+    timer_stopwatch = TimerStopwatch()
+
+    timer_thread = threading.Thread(target=timer_stopwatch.start_timer, args=(10,))
+    stopwatch_thread = threading.Thread(target=timer_stopwatch.start_stopwatch)
+
+    print("1. Start Timer")
+    print("2. Stop Timer")
+    print("3. Start Stopwatch")
+    print("4. Stop Stopwatch")
+    print("5. Exit")
+
+    while True:
+        choice = input("Enter your choice (1/2/3/4/5): ")
+
+        if choice == "1":
+            timer_thread = threading.Thread(target=timer_stopwatch.start_timer, args=(10,))
+            timer_thread.start()
+
+        elif choice == "2":
+            timer_stopwatch.stop_timer()
+            timer_thread.join()
+
+        elif choice == "3":
+            stopwatch_thread = threading.Thread(target=timer_stopwatch.start_stopwatch)
+            stopwatch_thread.start()
+
+        elif choice == "4":
+            timer_stopwatch.stop_stopwatch()
+            stopwatch_thread.join()
+
+        elif choice == "5":
+            print("Exiting the program. Goodbye!")
+            break
+
+        else:
+            print("Invalid choice. Please enter a valid option.")
